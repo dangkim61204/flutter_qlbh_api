@@ -9,17 +9,21 @@ use App\Models\Product;
 class ProductController extends Controller
 {
     // Lấy danh sách sản phẩm + category liên kết, tìm kiếm
-    public function index(Request $request)
-    {
-        $query = Product::with('category');
-        if ($request->has('search')) {
+  public function index(Request $request)
+{
+    $query = Product::with('category');
+
+    // Tìm kiếm theo tên
+    if ($request->has('search')) {
         $keyword = $request->input('search');
         $query->where('name', 'like', "%$keyword%");
     }
+    //phan trang
+    $perPage = $request->input('per_page', 2);
+    $products = $query->paginate($perPage);
 
-    return response()->json($query->get());
-    }
-
+    return response()->json($products); // <-- Trả về phân trang 
+}
    
 
     // Thêm sản phẩm
